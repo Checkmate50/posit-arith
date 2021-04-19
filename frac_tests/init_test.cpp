@@ -1,5 +1,5 @@
-#include "src/posit.hpp"
-#include "src/frac.hpp"
+#include "../src/posit.hpp"
+#include "../src/frac.hpp"
 #include <iostream>
 
 int main() {

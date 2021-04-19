@@ -47,7 +47,10 @@ std::string Frac::as_string() const {
 }
 
 double Frac::as_double() const {
-    return static_cast<double>(numerator) / static_cast<double>(denominator);
+    double neg = 1;
+    if (sign)
+        neg = -1;
+    return neg * static_cast<double>(numerator) / static_cast<double>(denominator);
 }
 
 frac_ptr Frac::neg() const {
