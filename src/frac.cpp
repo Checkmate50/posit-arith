@@ -53,7 +53,34 @@ double Frac::as_double() const {
     return neg * static_cast<double>(numerator) / static_cast<double>(denominator);
 }
 
-frac_ptr Frac::neg() const {
-    auto f = std::make_unique<Frac>(!sign, numerator, denominator);
+Frac Frac::neg() const {
+    Frac f(!sign, numerator, denominator);
     return f;
 }
+
+Frac Frac::add(const Frac& other) const {
+    uint64_t common_denom = denominator * other.denominator;
+    uint64_t num_result;
+    if (sign == other.sign)
+        num_result = numerator + other.numerator;
+}
+
+Frac Frac::operator-() const {
+    return neg();
+}
+
+Frac Frac::operator+(const Frac& other) const {
+    return add(other);
+}
+
+// Frac Frac::operator-(const Frac& other) const {
+//     return sub(other);
+// }
+
+// Frac Frac::operator*(const Frac& other) const {
+//     return mul(other);
+// }
+
+// Frac Frac::operator/(const Frac& other) const {
+//     return div(other);
+// }

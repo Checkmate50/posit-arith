@@ -7,6 +7,7 @@
 class Frac;
 using frac_ptr = std::unique_ptr<Frac>;
 
+// Guarantees the invariant that fractions are irreducible
 class Frac {
 private:
     bool sign;
@@ -25,10 +26,16 @@ public:
     std::string as_string() const;
     double      as_double() const;
 
-    frac_ptr neg() const;
-    frac_ptr add(frac_ptr other) const; // minimal addition implementation
-    frac_ptr sub(frac_ptr other) const;
-    frac_ptr mul(frac_ptr other) const;
-    frac_ptr div(frac_ptr other) const;
-    frac_ptr pow2(int val) const;
+    Frac neg() const;
+    Frac add(const Frac& other) const; // enforces gcd-based minimization, but might overflow
+    Frac sub(const Frac& other) const;
+    Frac mul(const Frac& other) const;
+    Frac div(const Frac& other) const;
+    Frac pow2(int val) const;
+
+    Frac operator-() const;
+    Frac operator+(const Frac& other) const;
+    Frac operator-(const Frac& other) const;
+    Frac operator*(const Frac& other) const;
+    Frac operator/(const Frac& other) const;
 };

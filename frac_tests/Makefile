@@ -1,4 +1,4 @@
-%: %.cpp src/posit.cpp src/frac.cpp
+%: %.cpp ../src/posit.cpp ../src/frac.cpp
 	g++ -std=c++17 $^ -o $*.exe -Wall -Wextra
 	.\$*.exe
 
