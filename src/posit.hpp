@@ -2,6 +2,10 @@
 
 #include <stdint.h>
 #include <string>
+#include <memory>
+
+class Posit;
+using posit_ptr = std::unique_ptr<Posit>;
 
 // https://github.com/libcg/bfp for some reference
 // https://posithub.org/docs/Posits4.pdf for general reference

@@ -49,3 +49,8 @@ std::string Frac::as_string() const {
 double Frac::as_double() const {
     return static_cast<double>(numerator) / static_cast<double>(denominator);
 }
+
+frac_ptr Frac::neg() const {
+    auto f = std::make_unique<Frac>(!sign, numerator, denominator);
+    return f;
+}

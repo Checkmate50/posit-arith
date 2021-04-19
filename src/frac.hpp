@@ -2,6 +2,10 @@
 
 #include <stdint.h>
 #include <string>
+#include <memory>
+
+class Frac;
+using frac_ptr = std::unique_ptr<Frac>;
 
 class Frac {
 private:
@@ -21,10 +25,10 @@ public:
     std::string as_string() const;
     double      as_double() const;
 
-    Frac neg(Frac other) const;
-    Frac add(Frac other) const; // minimal addition implementation
-    Frac sub(Frac other) const;
-    Frac mul(Frac other) const;
-    Frac div(Frac other) const;
-    Frac pow2(int val) const;
+    frac_ptr neg() const;
+    frac_ptr add(frac_ptr other) const; // minimal addition implementation
+    frac_ptr sub(frac_ptr other) const;
+    frac_ptr mul(frac_ptr other) const;
+    frac_ptr div(frac_ptr other) const;
+    frac_ptr pow2(int val) const;
 };
