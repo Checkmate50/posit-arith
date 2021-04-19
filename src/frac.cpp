@@ -1,5 +1,3 @@
-#pragma once
-
 #include "frac.hpp"
 #include <math.h>
 
@@ -18,12 +16,8 @@ long gcd(long a, long b)
 }
 
 Frac::Frac(int value) {
-    uint64_t result;
-    if (value < 0)
-        result = static_cast<uint64_t>(-value);
-    else
-        result = static_cast<uint64_t>(value);
-    Frac(value < 0, result, 1);
+    auto result = static_cast<uint64_t>(std::abs(value));
+    init(value < 0, result, 1);
 }
 
 Frac::Frac(double value) {
@@ -36,24 +30,13 @@ Frac::Frac(double value) {
 
     uint64_t denom = static_cast<uint64_t>(precision / gcd_);
 
-    uint64_t wholen;
-    if (value < 0)
-        wholen = static_cast<uint64_t>(-whole);
-    else
-        wholen = static_cast<uint64_t>(whole);
-    wholen *= denom;
+    auto wholen = static_cast<uint64_t>(std::abs(whole)) * denom;
     uint64_t num = wholen + static_cast<uint64_t>(round(fraction * precision) / gcd_);
-    Frac(value < 0, num, denom);
+    init(value < 0, num, denom);
 }
 
 Frac::Frac(bool sign, uint64_t numerator, uint64_t denominator) {
-    this->sign = sign;
-    this->numerator = numerator;
-    this->denominator = denominator;
-}
-
-double Frac::as_double() const {
-    return static_cast<double>(numerator) / static_cast<double>(denominator);
+    init(sign, numerator, denominator);
 }
 
 std::string Frac::as_string() const {
@@ -61,4 +44,8 @@ std::string Frac::as_string() const {
     if (sign)
         signs = "-";
     return signs + std::to_string(numerator) + " / " + std::to_string(denominator);
+}
+
+double Frac::as_double() const {
+    return static_cast<double>(numerator) / static_cast<double>(denominator);
 }
