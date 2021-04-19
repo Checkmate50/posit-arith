@@ -3,7 +3,7 @@
 #include <iostream>
 
 int main() {
-    Frac f(false, 3, 5);
+    Frac f(false, 4, 8);
     std::cout << f.as_string() << "\t" << f.as_double() << std::endl;
     Frac f2(-5);
     std::cout << f2.as_string() << "\t" << f2.as_double() << std::endl;

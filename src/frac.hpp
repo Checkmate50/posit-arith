@@ -13,11 +13,7 @@ private:
     bool sign;
     uint64_t numerator;
     uint64_t denominator;
-    void init(bool sign, uint64_t numerator, uint64_t denominator) {
-        this->sign = sign;
-        this->numerator = numerator;
-        this->denominator = denominator;
-    }
+    void init(bool sign, uint64_t numerator, uint64_t denominator);
 public:
     Frac(int value);
     Frac(double value); // a lazy conversion, can easily overflow
@@ -31,7 +27,7 @@ public:
     Frac sub(const Frac& other) const;
     Frac mul(const Frac& other) const;
     Frac div(const Frac& other) const;
-    Frac pow2(int val) const;
+    Frac pow2(int amount) const; // Frac^(2^amount)
 
     Frac operator-() const;
     Frac operator+(const Frac& other) const;
