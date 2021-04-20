@@ -17,6 +17,7 @@ private:
     uint8_t nbits;
     uint8_t esm;
     void init(uint64_t bits, uint8_t nbits, uint8_t es);
+    uint64_t signed_bits() const;
 public:
     Posit();
     Posit(uint8_t nbits, uint8_t es);
@@ -28,11 +29,11 @@ public:
     bool is_inf() const;
     bool is_neg() const;
 
-    uint8_t ns() const; // number of bits
-    uint8_t ss() const; // sign size
-    uint8_t rs() const; // regime size
-    uint8_t es() const; // exponent size
-    uint8_t fs() const; // fractional size
+    int ns() const; // number of bits
+    int ss() const; // sign size
+    int rs() const; // regime size
+    int es() const; // exponent size
+    int fs() const; // fractional size
 
     uint64_t npat()     const; // number of possible representations
     uint64_t useed()    const; // 2^2^es
@@ -41,7 +42,7 @@ public:
     uint64_t qsize()    const; // the quire size
     uint64_t qextra()   const; // extra bits for overflow
 
-    int         signbit()   const; // get the sign bit
+    bool        signbit()   const; // get the sign bit
     uint64_t    regime()    const; // get the regime bits
     uint64_t    esbits()    const; // get the exponent bits
     uint64_t    frbits()    const; // get the fractional bits

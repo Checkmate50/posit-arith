@@ -1,6 +1,7 @@
 #include <math.h>
 #include <assert.h>
 #include "posit.hpp"
+#include <iostream>
 
 void Posit::init(uint64_t bits, uint8_t nbits, uint8_t es) {
     assert(nbits >= es);
@@ -9,6 +10,16 @@ void Posit::init(uint64_t bits, uint8_t nbits, uint8_t es) {
     this->bits = bits;
     this->nbits = nbits;
     this->esm = es;
+}
+
+uint64_t Posit::signed_bits() const {
+    auto negcheck = (static_cast<uint64_t>(1) << (nbits - 1));
+    bool isneg = bits & negcheck;
+    if (!isneg)
+        return bits;
+    auto result = ~bits + 1;
+    result |= negcheck; // reset the neg bit
+    return result;
 }
 
 Posit::Posit() {
@@ -43,26 +54,31 @@ bool Posit::is_neg() const {
     return bits & (static_cast<uint64_t>(1) << (nbits - 1));
 }
 
-uint8_t Posit::ss() const {
+int Posit::ns() const {
+    return nbits;
+}
+
+int Posit::ss() const {
     return 1;
 }
 
-uint8_t Posit::rs() const {
+int Posit::rs() const {
     uint64_t bitcheck = static_cast<uint64_t>(1) << (nbits - 2);
-    bool rsign = bits ^ bitcheck;
+    auto sbits = signed_bits();
+    bool rsign = sbits & bitcheck;
     uint8_t count = 1;
-    while (bitcheck > 0 && (static_cast<bool>(bits ^ bitcheck) == rsign)) {
+    while (bitcheck > 1 && (static_cast<bool>(sbits & bitcheck) == rsign)) {
         bitcheck >>= 1;
         count++;
     }
     return count;
 }
 
-uint8_t Posit::es() const {
-    return std::min(std::max(nbits - ss() - rs(), static_cast<uint8_t>(0)), esm);
+int Posit::es() const {
+    return std::min(std::max(nbits - ss() - rs(), 0), static_cast<int>(esm));
 }
 
-uint8_t Posit::fs() const{
+int Posit::fs() const{
     return std::max(nbits - ss() - rs() - es(), 0);
 }
 
@@ -83,9 +99,33 @@ Frac Posit::minpos() const {
 }
 
 uint64_t Posit::qsize() const {
-    return static_cast<uint64_t>(1) << static_cast<uint64_t>(log2(nbits - 2 * pow(2, esm + 2) + 5));
+    return static_cast<uint64_t>(1) << static_cast<int>(std::ceil(log2((nbits - 2) * pow(2, esm + 2) + 5)));
 }
 
 uint64_t Posit::qextra() const {
     return qsize() - (nbits - 2)*static_cast<uint64_t>(pow(2, esm + 2));
+}
+
+bool Posit::signbit() const {
+    return is_neg();
+} 
+
+uint64_t mask_bits(uint64_t bits, int size, int offset) {
+    uint64_t mask = 0;
+    for (int i = 0; i < size; i++)
+        mask = (mask << 1) + 1;
+    mask <<= offset;
+    return bits & mask;
+}
+
+uint64_t Posit::regime() const {
+    return mask_bits(bits, rs(), std::max(nbits - rs() - ss(), 0));
+}
+
+uint64_t Posit::esbits() const {
+    return mask_bits(bits, es(), std::max(nbits - rs() - ss() - es(), 0));
+}
+
+uint64_t Posit::frbits() const {
+    return mask_bits(bits, fs(), 0);
 }
