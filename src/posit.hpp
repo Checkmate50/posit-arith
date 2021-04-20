@@ -1,5 +1,6 @@
 #pragma once
 
+#include "frac.hpp"
 #include <stdint.h>
 #include <string>
 #include <memory>
@@ -12,29 +13,33 @@ using posit_ptr = std::unique_ptr<Posit>;
 class Posit {
 private:
     // Support posits of up to size 64
-    uint64_t backing_bits;
-    int es_max;
+    uint64_t bits;
+    uint8_t nbits;
+    uint8_t esm;
+    void init(uint64_t bits, uint8_t nbits, uint8_t es);
 public:
     Posit();
-    Posit(uint32_t bits);
-    Posit(int es);
-    Posit(uint32_t bits, int es);
+    Posit(uint8_t nbits, uint8_t es);
+    Posit(uint64_t bits);
+    Posit(uint64_t bits, uint8_t nbits, uint8_t es);
 
-    bool isEqual(Posit other) const;
-    bool isZero() const;
-    bool isInf() const;
-    bool isNeg() const;
+    bool is_equal(const Posit& other) const;
+    bool is_zero() const;
+    bool is_inf() const;
+    bool is_neg() const;
+
+    uint8_t ns() const; // number of bits
+    uint8_t ss() const; // sign size
+    uint8_t rs() const; // regime size
+    uint8_t es() const; // exponent size
+    uint8_t fs() const; // fractional size
 
     uint64_t npat()     const; // number of possible representations
     uint64_t useed()    const; // 2^2^es
-    uint64_t maxval()   const; // the maximum value (the minimum is 1/maxval)
+    Frac     minpos()   const; // the minimum value (1 / maxval)
+    uint64_t maxpos()   const; // the maximum value
     uint64_t qsize()    const; // the quire size
     uint64_t qextra()   const; // extra bits for overflow
-
-    int ss() const; // sign size
-    int rs() const; // regime size
-    int es() const; // exponent size
-    int fs() const; // fractional size
 
     int         signbit()   const; // get the sign bit
     uint64_t    regime()    const; // get the regime bits
@@ -42,7 +47,8 @@ public:
     uint64_t    frbits()    const; // get the fractional bits
 
     double      as_double()    const; // Represent this posit as an approximate double
-    std::string as_frac()      const; // Represent this posit as a fraction in a string
+    Frac        as_frac()      const; // Represent this posit as a fraction
+    std::string as_string()    const; // Represent the bits of this posit in a string
 };
 
 class Posit32 : public Posit

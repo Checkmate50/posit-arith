@@ -19,8 +19,8 @@ public:
     Frac(double value); // a lazy conversion, can easily overflow
     Frac(bool sign, uint64_t numerator, uint64_t denominator);
 
-    std::string as_string() const;
-    double      as_double() const;
+    std::string to_string() const;
+    double      to_double() const;
 
     Frac neg() const;
     Frac add(const Frac& other) const; // enforces gcd-based minimization, but might overflow

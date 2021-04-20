@@ -47,14 +47,14 @@ Frac::Frac(bool sign, uint64_t numerator, uint64_t denominator) {
     init(sign, numerator / gcd_, denominator / gcd_);
 }
 
-std::string Frac::as_string() const {
+std::string Frac::to_string() const {
     std::string signs = "";
     if (sign)
         signs = "-";
     return signs + std::to_string(numerator) + " / " + std::to_string(denominator);
 }
 
-double Frac::as_double() const {
+double Frac::to_double() const {
     double neg = 1;
     if (sign)
         neg = -1;
