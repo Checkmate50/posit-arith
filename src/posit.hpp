@@ -46,10 +46,12 @@ public:
     uint64_t    regime()    const; // get the regime bits
     uint64_t    esbits()    const; // get the exponent bits
     uint64_t    frbits()    const; // get the fractional bits
+    int         regime_val()const; // get the regime value (the number of bits in the sequence)
+    uint64_t    esbits_s()  const; // get the exponent bits shifted to the right
 
-    double      as_double()    const; // Represent this posit as an approximate double
-    Frac        as_frac()      const; // Represent this posit as a fraction
-    std::string as_string()    const; // Represent the bits of this posit in a string
+    Frac        to_frac()      const; // Represent this posit as a fraction
+    double      to_double()    const; // Represent this posit as an approximate double (i.e. just the fraction as a double)
+    std::string to_string()    const; // Represent the bits of this posit in a string
 };
 
 class Posit32 : public Posit

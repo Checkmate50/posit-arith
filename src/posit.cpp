@@ -2,6 +2,8 @@
 #include <assert.h>
 #include "posit.hpp"
 #include <iostream>
+#include <limits>
+#include <math.h>
 
 void Posit::init(uint64_t bits, uint8_t nbits, uint8_t es) {
     assert(nbits >= es);
@@ -119,13 +121,69 @@ uint64_t mask_bits(uint64_t bits, int size, int offset) {
 }
 
 uint64_t Posit::regime() const {
-    return mask_bits(bits, rs(), std::max(nbits - rs() - ss(), 0));
+    return mask_bits(signed_bits(), rs(), es() + fs());
 }
 
 uint64_t Posit::esbits() const {
-    return mask_bits(bits, es(), std::max(nbits - rs() - ss() - es(), 0));
+    return mask_bits(signed_bits(), es(), fs());
 }
 
 uint64_t Posit::frbits() const {
-    return mask_bits(bits, fs(), 0);
+    return mask_bits(signed_bits(), fs(), 0);
+}
+
+int Posit::regime_val() const {
+    auto bitcheck = static_cast<uint64_t>(1) << (nbits - 2);
+    if (signed_bits() & bitcheck) {
+        if (rs() == nbits - 1 && signed_bits() & 1)
+            return rs() - 1; // special case for all ones
+        return rs() - 2;
+    }
+    return -rs() + 1;
+}
+
+uint64_t Posit::esbits_s() const {
+    return (esbits() >> fs()) << (esm - es());
+}
+
+Frac Posit::to_frac() const {
+    // Basically p2x of https://posithub.org/docs/Posits4.pdf
+    if (is_zero())
+        return Frac(false, 0, 1);
+    if (is_inf())
+        return Frac(false, 1, 0);
+    auto s = is_neg();
+    uint64_t num = 1;
+    uint64_t denom = 1;
+
+    
+    int k = regime_val();
+    if (k >= 0)
+        num *= pow(useed(), k);
+    else
+        denom *= pow(useed(), -k);
+
+    num *= 1 << esbits_s();
+    num *= (frbits() << 1) + 1;
+    if (frbits() > 0)
+        denom *= 1 << fs();
+
+    return Frac(s, num, denom);
+}
+
+double Posit::to_double() const{ 
+    // basically just calls the Frac.to_double() function
+    if (is_inf())
+        return std::numeric_limits<double>::infinity();
+    return to_frac().to_double();
+}
+
+std::string Posit::to_string() const {
+    std::string result = "";
+    auto b = static_cast<uint64_t>(1) << (nbits - 1);
+    for (int i = 0; i < nbits; i++) {
+        result += bits & b ? "1" : "0";
+        b >>= 1;
+    }
+    return result;
 }
