@@ -1,19 +1,6 @@
 #include "frac.hpp"
 #include <math.h>
-
-// https://stackoverflow.com/questions/26643695/converting-a-floating-point-decimal-value-to-a-fraction
-uint64_t gcd(uint64_t a, uint64_t b)
-{
-    if (a == 0)
-        return b;
-    else if (b == 0)
-        return a;
-
-    if (a < b)
-        return gcd(a, b % a);
-    else
-        return gcd(b, a % b);
-}
+#include <numeric>
 
 void Frac::init(bool sign, uint64_t numerator, uint64_t denominator) {
     // assumes the numerator and denominator have already been reduced
@@ -33,7 +20,7 @@ Frac::Frac(double value) {
     // copied from https://stackoverflow.com/questions/26643695/converting-a-floating-point-decimal-value-to-a-fraction
     const long precision = 1000000000; // This is the accuracy.
 
-    uint64_t gcd_ = gcd(round(fraction * precision), precision);
+    uint64_t gcd_ = std::gcd(static_cast<uint64_t>(round(fraction * precision)), precision);
 
     uint64_t denom = static_cast<uint64_t>(precision / gcd_);
 
@@ -43,8 +30,31 @@ Frac::Frac(double value) {
 }
 
 Frac::Frac(bool sign, uint64_t numerator, uint64_t denominator) {
-    uint64_t gcd_ = gcd(numerator, denominator);
+    uint64_t gcd_ = std::gcd(numerator, denominator);
     init(sign, numerator / gcd_, denominator / gcd_);
+}
+
+bool Frac::is_equal(const Frac& other) const {
+    if (sign != other.sign)
+        return false;
+    uint64_t lc = std::lcm(denominator, other.denominator);
+    auto left = numerator * (lc / denominator);
+    auto right = other.numerator * (lc / other.denominator);
+    return left == right;
+}
+
+bool Frac::is_less(const Frac& other) const {
+    if (sign && !(other.sign))
+        return false;
+    if (!sign && other.sign)
+        return true;
+    uint64_t lc = std::lcm(denominator, other.denominator);
+    auto left = numerator * (lc / denominator);
+    auto right = other.numerator * (lc / other.denominator);
+    if (sign)
+        return right < left;
+    else
+        return left < right;
 }
 
 std::string Frac::to_string() const {
@@ -104,6 +114,25 @@ Frac Frac::pow2(int amount) const {
     return Frac(sign, numerator << amount, denominator);
 }
 
+bool Frac::operator==(const Frac& other) const {
+    return is_equal(other);
+}
+
+bool Frac::operator<=(const Frac& other) const {
+    return is_equal(other) || is_less(other);
+}
+
+bool Frac::operator>=(const Frac& other) const {
+    return is_equal(other) || other.is_less(*this);
+}
+
+bool Frac::operator<(const Frac& other) const {
+    return is_less(other);
+}
+
+bool Frac::operator>(const Frac& other) const {
+    return other.is_less(*this);
+}
 Frac Frac::operator-() const {
     return neg();
 }

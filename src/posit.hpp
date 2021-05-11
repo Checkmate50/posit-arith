@@ -24,23 +24,23 @@ public:
     Posit(uint64_t bits);
     Posit(uint64_t bits, uint8_t nbits, uint8_t es);
 
-    bool is_equal(const Posit& other) const;
-    bool is_zero() const;
-    bool is_inf() const;
-    bool is_neg() const;
+    bool        is_equal(const Posit& other) const;
+    bool        is_zero() const;
+    bool        is_inf() const;
+    bool        is_neg() const;
 
-    int ns() const; // number of bits
-    int ss() const; // sign size
-    int rs() const; // regime size
-    int es() const; // exponent size
-    int fs() const; // fractional size
+    int         ns() const; // number of bits
+    int         ss() const; // sign size
+    int         rs() const; // regime size
+    int         es() const; // exponent size
+    int         fs() const; // fractional size
 
-    uint64_t npat()     const; // number of possible representations
-    uint64_t useed()    const; // 2^2^es
-    Frac     minpos()   const; // the minimum value (1 / maxval)
-    uint64_t maxpos()   const; // the maximum value
-    uint64_t qsize()    const; // the quire size
-    uint64_t qextra()   const; // extra bits for overflow
+    uint64_t    npat()     const; // number of possible representations
+    uint64_t    useed()    const; // 2^2^es
+    Frac        minpos()   const; // the minimum value (1 / maxval)
+    uint64_t    maxpos()   const; // the maximum value
+    uint64_t    qsize()    const; // the quire size
+    uint64_t    qextra()   const; // extra bits for overflow
 
     bool        signbit()   const; // get the sign bit
     uint64_t    regime()    const; // get the regime bits
@@ -52,6 +52,25 @@ public:
     Frac        to_frac()      const; // Represent this posit as a fraction
     double      to_double()    const; // Represent this posit as an approximate double (i.e. just the fraction as a double)
     std::string to_string()    const; // Represent the bits of this posit in a string
+
+    bool        is_less(const Posit& other) const; // Return whether this is less than the other posit
+    Posit       negate()                    const; // Adds this Posit to other
+    Posit       add(const Posit& other)     const; // Adds this Posit to other
+    Posit       sub(const Posit& other)     const; // Subtracts other from this Posit
+    Posit       mul(const Posit& other)     const; // Multiplies this posit by the other
+    Posit       div(const Posit& other)     const; // Divide other from this posit
+
+    bool        operator==(const Posit& other)  const;
+    bool        operator<=(const Posit& other)  const;
+    bool        operator>=(const Posit& other)  const;
+    bool        operator<(const Posit& other)   const;
+    bool        operator>(const Posit& other)   const;
+
+    Posit       operator-()                     const;
+    Posit       operator+(const Posit& other)   const;
+    Posit       operator-(const Posit& other)   const;
+    Posit       operator*(const Posit& other)   const;
+    Posit       operator/(const Posit& other)   const;
 };
 
 class Posit32 : public Posit
